@@ -2,12 +2,14 @@ import socket
 import threading
 import pickle
 import sys
+import argparse
+import signal
 
 # Lista de contatos da agenda
 contacts = {}
 
 # Lista de servidores (excluindo o próprio)
-servers = [("localhost", 9002), ("localhost", 9003)]
+servers = []
 
 
 # Função para sincronizar as alterações com outras agendas
@@ -82,27 +84,58 @@ def handle_client(conn, addr):
         conn.close()
 
 
-def start_server(host, port):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-        server_socket.bind((host, port))
-        server_socket.listen()
-        print(f"Servidor escutando em {host}:{port}...")
+# Função que encerra o servidor de forma segura
+def shutdown_server(server_socket):
+    print("Encerrando o servidor...")
+    server_socket.close()
+    sys.exit(0)
 
+
+# Função para iniciar o servidor
+def start_server(host, port):
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Permite reutilizar a mesma porta imediatamente após o encerramento
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+    # Vincula o servidor ao host e porta fornecidos
+    server_socket.bind((host, port))
+    server_socket.listen()
+
+    print(f"Servidor escutando em {host}:{port}...")
+
+    # Captura os sinais de interrupção para encerrar o servidor corretamente
+    signal.signal(signal.SIGINT, lambda sig, frame: shutdown_server(server_socket))
+    signal.signal(signal.SIGTERM, lambda sig, frame: shutdown_server(server_socket))
+
+    try:
         while True:
             conn, addr = server_socket.accept()
             client_thread = threading.Thread(target=handle_client, args=(conn, addr))
             client_thread.start()
 
+    except Exception as e:
+        print(f"Erro no servidor: {e}")
+
+    finally:
+        # Encerra o socket ao finalizar o programa
+        shutdown_server(server_socket)
+
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Uso: python server.py <porta>")
-        sys.exit(1)
+    # Configuração para aceitar argumentos de IP e porta via linha de comando
+    parser = argparse.ArgumentParser(description="Servidor de Agenda Distribuída")
+    parser.add_argument('--host', type=str, required=True, help='IP do servidor')
+    parser.add_argument('--port', type=int, required=True, help='Porta do servidor')
+    parser.add_argument('--other_servers', nargs='*', help='Outros servidores no formato IP:PORTA')
 
-    port = int(sys.argv[1])
+    args = parser.parse_args()
 
-    # Modifique a lista de servidores para excluir a própria instância do servidor
-    servers = [("localhost", p) for p in [9001, 9002, 9003] if p != port]
+    # Carrega a lista de outros servidores fornecidos pelo usuário
+    if args.other_servers:
+        for server in args.other_servers:
+            ip, port = server.split(":")
+            servers.append((ip, int(port)))
 
-    # Inicializa o servidor em localhost na porta especificada
-    start_server("localhost", port)
+    # Inicializa o servidor com o IP e porta fornecidos pelo usuário
+    start_server(args.host, args.port)
