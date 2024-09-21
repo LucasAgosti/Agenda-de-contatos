@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 import argparse
 
-# Função para conectar ao servidor
+# Função para conectar ao servidor escolhido pelo cliente
 def connect_to_server(host, port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -123,22 +123,40 @@ class ContactApp:
             show_error_message(response)
 
 # Função principal para iniciar o programa
-def main(host, port):
-    server_socket = connect_to_server(host, port)
-    if not server_socket:
+def main():
+    root = tk.Tk()
+
+    # Escolha de qual servidor (agenda) se conectar
+    servers = [
+        ("Agenda 1", "192.168.0.11", 9010),
+        ("Agenda 2", "192.168.0.11", 9011),
+        ("Agenda 3", "192.168.0.11", 9012)
+    ]
+
+    # Exibe uma janela para o usuário escolher o servidor
+    chosen_server = simpledialog.askstring("Escolha o Servidor", "Escolha uma agenda: 1, 2 ou 3")
+
+    if chosen_server == "1":
+        host, port = servers[0][1], servers[0][2]
+    elif chosen_server == "2":
+        host, port = servers[1][1], servers[1][2]
+    elif chosen_server == "3":
+        host, port = servers[2][1], servers[2][2]
+    else:
+        show_error_message("Escolha inválida. Encerrando o programa.")
+        root.quit()
         return
 
-    root = tk.Tk()
+    # Tenta conectar ao servidor escolhido
+    server_socket = connect_to_server(host, port)
+    if not server_socket:
+        show_error_message("Servidor offline ou não disponível.")
+        root.quit()
+        return
+
+    # Inicia a interface gráfica
     app = ContactApp(root, server_socket)
     root.mainloop()
 
 if __name__ == "__main__":
-    # Configuração para aceitar argumentos de IP e porta via linha de comando
-    parser = argparse.ArgumentParser(description="Cliente de Agenda com Interface Gráfica")
-    parser.add_argument('--host', type=str, required=True, help='IP do servidor')
-    parser.add_argument('--port', type=int, required=True, help='Porta do servidor')
-
-    args = parser.parse_args()
-
-    # Inicializa o cliente com o IP e porta fornecidos
-    main(args.host, args.port)
+    main()
