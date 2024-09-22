@@ -128,9 +128,9 @@ def main():
 
     # Escolha de qual servidor (agenda) se conectar
     servers = [
-        ("Agenda 1", "192.168.0.11", 9010),
-        ("Agenda 2", "192.168.0.11", 9011),
-        ("Agenda 3", "192.168.0.11", 9012)
+        ("agenda1", "192.168.0.11", 9010),
+        ("agenda2", "192.168.0.11", 9011),
+        ("agenda3", "192.168.0.11", 9012)
     ]
 
     # Exibe uma janela para o usuário escolher o servidor
