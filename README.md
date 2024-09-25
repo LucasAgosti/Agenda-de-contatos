@@ -75,17 +75,13 @@ python3 client.py
 
 Ao executar o cliente, você será solicitado a fornecer o IP e a porta do servidor ao qual deseja se conectar.
 
-Exemplo de Interação:
+**Exemplo de Interação:**
 O cliente escolhe o IP e porta do servidor:
 
 IP: 192.168.0.11
-Porta: 9010
-O cliente pode então realizar as seguintes operações:
+Porta: 9010 (cuidado para não iniciar com a porta de sincronização, caso contrário a instância do cliente irá quebrar)
+O cliente pode então realizar as operações listadas anteriormente
 
-Visualizar contatos: Lista todos os contatos na agenda.
-Adicionar contato: Insere um novo contato com nome e número de telefone.
-Remover contato: Remove um contato existente.
-Atualizar contato: Atualiza o número de telefone de um contato existente.
 
 **Exemplo de Sincronização**:
 - O cliente se conecta ao agenda1 e adiciona um contato.
