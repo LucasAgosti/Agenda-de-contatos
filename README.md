@@ -58,7 +58,9 @@ python3 agenda1.py --host XX.XXX.X.XX --port YYYY --sync_port ZZZZ --other_serve
 exemplo de execução das 3 agendas:
 
 python3 agenda1.py --host 190.172.0.99 --port 9010 --sync_port 9005 --other_servers 190.172.0.99:9006 190.172.0.99:9007
+
 python3 agenda2.py --host 190.172.0.99 --port 9011 --sync_port 9006 --other_servers 190.172.0.99:9005 190.172.0.99:9007
+
 python3 agenda3.py --host 190.172.0.99 --port 9012 --sync_port 9007 --other_servers 190.172.0.99:9005 190.172.0.99:9006
 
 - (ou agenda2.py/agenda3.py, uma para cada agenda)
