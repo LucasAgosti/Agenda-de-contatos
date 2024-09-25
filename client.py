@@ -49,7 +49,6 @@ def send_request(server_socket, action, name=None, phone=None):
 def show_error_message(msg):
     messagebox.showerror("Erro", msg)
 
-# Classe principal da GUI
 class ContactApp:
     def __init__(self, root, server_socket):
         self.root = root
@@ -135,7 +134,6 @@ class ContactApp:
         else:
             show_error_message(response)
 
-# Função principal para iniciar o programa
 def main():
     root = tk.Tk()
 
