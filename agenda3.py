@@ -1,3 +1,26 @@
+# -----------------------------------------------------------------------------
+# Copyright 2024 Lucas Fernandes
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+# -----------------------------------------------------------------------------
+
+
 import socket
 import threading
 import pickle
@@ -21,7 +44,7 @@ def sync_with_other_servers(action, name, phone=None, servers=[]):
         except ConnectionRefusedError:
             print(f"Servidor {server} está offline. Não foi possível sincronizar.")
 
-# Função para receber atualizações de outros servidores
+# Função para receber as atualizações de outros servidores
 def handle_server_sync(conn):
     try:
         while True:
@@ -46,7 +69,7 @@ def handle_server_sync(conn):
     finally:
         conn.close()
 
-# Função para lidar com os clientes
+# Função para tratar ações dos clientes
 def handle_client(conn, addr, servers):
     print(f"Conexão estabelecida com {addr}")
     try:
@@ -91,7 +114,7 @@ def handle_client(conn, addr, servers):
         print(f"Cliente {addr} desconectado.")
         conn.close()
 
-# Função para sincronizar dados ao iniciar se a agenda estava offline
+# Função para sincronizar dados ao iniciar, caso agenda estivesse offline
 def fetch_data_from_other_servers(servers):
     print("Sincronizando dados ao iniciar...")
     for server in servers:
@@ -106,7 +129,7 @@ def fetch_data_from_other_servers(servers):
         except ConnectionRefusedError:
             print(f"Servidor {server} não está disponível para sincronização inicial.")
 
-# Função para iniciar o servidor de sincronização
+# Função para iniciar o "servidor de sincronização"
 def start_sync_server(sync_port):
     sync_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sync_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

@@ -1,3 +1,26 @@
+# -----------------------------------------------------------------------------
+# Copyright 2024 Lucas Fernandes
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+# -----------------------------------------------------------------------------
+
+
 import socket
 import pickle
 import tkinter as tk
@@ -15,41 +38,33 @@ def connect_to_server(host, port):
         print(f"Servidor {host}:{port} offline.")
         return None
 
-# Função para enviar requisições ao servidor
 def send_request(server_socket, action, name=None, phone=None):
     request = (action, name, phone)
     server_socket.sendall(pickle.dumps(request))
     response = pickle.loads(server_socket.recv(1024))
     return response
 
-# Função para exibir uma mensagem de erro
 def show_error_message(msg):
     messagebox.showerror("Erro", msg)
 
-# Classe principal da GUI
 class ContactApp:
     def __init__(self, root, server_socket):
         self.root = root
         self.server_socket = server_socket
         self.root.title("Agenda de Contatos")
 
-        # Lista de contatos (usada no Listbox)
         self.contacts_list = tk.Listbox(self.root, height=10, width=50)
         self.contacts_list.grid(row=0, column=0, columnspan=3)
 
-        # Botão para visualizar os contatos
         self.view_button = tk.Button(self.root, text="Visualizar Contatos", command=self.view_contacts)
         self.view_button.grid(row=1, column=0)
 
-        # Botão para adicionar um novo contato
         self.add_button = tk.Button(self.root, text="Adicionar Contato", command=self.add_contact)
         self.add_button.grid(row=1, column=1)
 
-        # Botão para remover um contato
         self.remove_button = tk.Button(self.root, text="Remover Contato", command=self.remove_contact)
         self.remove_button.grid(row=1, column=2)
 
-        # Campos de entrada para adicionar ou atualizar contatos
         self.name_label = tk.Label(self.root, text="Nome")
         self.name_label.grid(row=2, column=0)
 
@@ -62,11 +77,9 @@ class ContactApp:
         self.phone_entry = tk.Entry(self.root)
         self.phone_entry.grid(row=3, column=1)
 
-        # Botão para atualizar um contato
         self.update_button = tk.Button(self.root, text="Atualizar Contato", command=self.update_contact)
         self.update_button.grid(row=4, column=0, columnspan=2)
 
-    # Função para visualizar os contatos
     def view_contacts(self):
         response = send_request(self.server_socket, 'view')
         self.contacts_list.delete(0, tk.END)  # Limpa a lista atual
@@ -77,7 +90,6 @@ class ContactApp:
         else:
             show_error_message(response)
 
-    # Função para adicionar um novo contato
     def add_contact(self):
         name = self.name_entry.get()
         phone = self.phone_entry.get()
@@ -92,7 +104,6 @@ class ContactApp:
         else:
             show_error_message(response)
 
-    # Função para remover um contato selecionado
     def remove_contact(self):
         selected = self.contacts_list.curselection()
         if selected:
@@ -107,7 +118,6 @@ class ContactApp:
         else:
             show_error_message("Selecione um contato para remover.")
 
-    # Função para atualizar um contato
     def update_contact(self):
         name = self.name_entry.get()
         phone = self.phone_entry.get()
@@ -122,18 +132,16 @@ class ContactApp:
         else:
             show_error_message(response)
 
-# Função principal para iniciar o programa
 def main():
     root = tk.Tk()
 
     # Escolha de qual servidor (agenda) se conectar
     servers = [
-        ("agenda1", "192.168.0.11", 9010),
-        ("agenda2", "192.168.0.11", 9011),
-        ("agenda3", "192.168.0.11", 9012)
+        ("agenda1", "192.168.10.125", 9010),
+        ("agenda2", "192.168.10.125", 9011),
+        ("agenda3", "192.168.10.125", 9012)
     ]
 
-    # Exibe uma janela para o usuário escolher o servidor
     chosen_server = simpledialog.askstring("Escolha o Servidor", "Escolha uma agenda: 1, 2 ou 3")
 
     if chosen_server == "1":
@@ -154,7 +162,6 @@ def main():
         root.quit()
         return
 
-    # Inicia a interface gráfica
     app = ContactApp(root, server_socket)
     root.mainloop()
 
