@@ -38,15 +38,18 @@ def connect_to_server(host, port):
         print(f"Servidor {host}:{port} offline.")
         return None
 
+# Função para enviar requisições ao servidor
 def send_request(server_socket, action, name=None, phone=None):
     request = (action, name, phone)
     server_socket.sendall(pickle.dumps(request))
     response = pickle.loads(server_socket.recv(1024))
     return response
 
+# Função para exibir uma mensagem de erro
 def show_error_message(msg):
     messagebox.showerror("Erro", msg)
 
+# Classe principal da GUI
 class ContactApp:
     def __init__(self, root, server_socket):
         self.root = root
@@ -132,30 +135,20 @@ class ContactApp:
         else:
             show_error_message(response)
 
+# Função principal para iniciar o programa
 def main():
     root = tk.Tk()
 
-    # Escolha de qual servidor (agenda) se conectar
-    servers = [
-        ("agenda1", "192.168.10.125", 9010),
-        ("agenda2", "192.168.10.125", 9011),
-        ("agenda3", "192.168.10.125", 9012)
-    ]
+    # Solicitar o IP e a porta do servidor
+    host = simpledialog.askstring("Conexão", "Digite o IP do servidor:")
+    port = simpledialog.askinteger("Conexão", "Digite a porta do servidor:")
 
-    chosen_server = simpledialog.askstring("Escolha o Servidor", "Escolha uma agenda: 1, 2 ou 3")
-
-    if chosen_server == "1":
-        host, port = servers[0][1], servers[0][2]
-    elif chosen_server == "2":
-        host, port = servers[1][1], servers[1][2]
-    elif chosen_server == "3":
-        host, port = servers[2][1], servers[2][2]
-    else:
-        show_error_message("Escolha inválida. Encerrando o programa.")
+    if not host or not port:
+        show_error_message("IP ou porta inválidos. Encerrando o programa.")
         root.quit()
         return
 
-    # Tenta conectar ao servidor escolhido
+    # Tenta conectar ao servidor fornecido pelo usuário
     server_socket = connect_to_server(host, port)
     if not server_socket:
         show_error_message("Servidor offline ou não disponível.")
